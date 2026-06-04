@@ -1,0 +1,55 @@
+Resumen: conceptos clave para la interrogación
+
+Conceptos:
+- Dataset / DataFrame: Contenedor de los datos crudos; filas = ejemplos, columnas = características y etiqueta.
+- Features (X): Variables de entrada que usa el modelo (ej.: HP, Attack).
+- Target (y / Legendary): Variable objetivo a predecir (0/1).
+- Train / Valid / Test: Entrenamiento (ajustar parámetros), validación (ajustar hiperparámetros / early stop), prueba (evaluación final).
+- stratify: Mantiene proporción de clases al dividir (importante en datasets desbalanceados).
+- StandardScaler: Normaliza features a media 0 y varianza 1; ayuda a convergencia de la red.
+- Dataset personalizado (torch.utils.data.Dataset): Envuelve datos para convertirlos en tensores y exponer __len__/__getitem__.
+- DataLoader: Crea minibatches, controla batch_size y shuffle.
+- batch_size: Número de ejemplos por paso de optimizador; afecta estabilidad y memoria.
+- optimizer (ej. Adam): Algoritmo que actualiza pesos; Adam es adaptativo y robusto por defecto.
+- learning rate (lr): Tamaño del paso en la actualización; hyperparámetro crítico.
+- CrossEntropyLoss: Pérdida para clasificación con logits y múltiples clases.
+- model.train()/model.eval(): Modo entrenamiento activa dropout/batchnorm; eval() desactiva comportamiento de entrenamiento.
+- torch.no_grad(): Desactiva cálculo de gradientes en evaluación para ahorrar memoria/tiempo.
+- Dropout: Regularización que apaga neuronas aleatoriamente para reducir overfitting.
+- Early stopping / best checkpoint: Guardar modelo con mejor validación para evitar sobreajuste.
+- Precision / Recall / F1: Métricas para evaluar clasificación en datasets desbalanceados.
+- Confusion matrix: Muestra TP, TN, FP, FN; útil para entender tipo de error.
+
+Preguntas de práctica (responde breve / opción múltiple):
+1. ¿Por qué usamos StandardScaler antes de entrenar una red neuronal?
+2. ¿Qué hace stratify=y al dividir el dataset?
+3. Para CrossEntropyLoss, ¿qué tipo (dtype) deben tener las etiquetas en PyTorch?
+4. ¿Qué distingue model.train() de model.eval()?
+5. Si tu modelo tiene salida de 2 neuronas, ¿por qué CrossEntropyLoss es apropiado?
+6. ¿Qué efecto tiene aumentar el batch_size sobre la estimación del gradiente y la memoria?
+7. Define brevemente learning rate y qué pasa si es demasiado alto.
+8. ¿Qué es dropout y cuándo lo usarías?
+9. Explica en una frase qué mide el recall.
+10. ¿Por qué no usar accuracy como métrica principal en un dataset con clases muy desbalanceadas?
+11. ¿Qué significa guardar el best checkpoint según valid loss?
+12. Describe el propósito de torch.no_grad() durante la evaluación.
+13. ¿Cómo podrías mejorar la detección de la clase minoritaria (legendarios)? Nombra 2 técnicas.
+14. ¿Qué representa un false negative (FN) en este problema y por qué puede ser crítico?
+15. ¿Por qué fijar semillas (manual_seed) es útil cuando comparas modelos?
+
+Respuestas rápidas:
+1. Porque pone features en misma escala (media 0, varianza 1), ayudando la convergencia.
+2. Mantiene la proporción de clases en cada split, evitando sesgo por desbalance.
+3. torch.long (enteros de clase).
+4. train() habilita dropout/batchnorm en modo entrenamiento; eval() los desactiva/usa estadísticas globales.
+5. CrossEntropyLoss toma logits y aplica softmax internamente para comparar con etiquetas de clase.
+6. Gradiente más estable (menos ruido) pero requiere más memoria; pasos menos frecuentes por época.
+7. lr es el tamaño del paso en la actualización de pesos; si es muy alto puede divergir.
+8. Regularización que apaga neuronas aleatoriamente; se usa para reducir overfitting en modelos grandes.
+9. Proporción de positivos reales que fueron correctamente identificados.
+10. Porque un modelo que predice siempre la clase mayoritaria tendría alta accuracy pero sería inútil para la minoría.
+11. Guardar la versión del modelo con menor pérdida en validación, evitando sobreajuste posterior.
+12. Desactiva cálculo de gradientes para ahorrar memoria/tiempo durante inferencia.
+13. a) Re-muestreo (oversample minoría / undersample mayoría), b) usar pesos de clase en la pérdida o técnicas como SMOTE.
+14. FN = un Pokémon legendario clasificado como no legendario; crítico porque se pierde un caso positivo importante.
+15. Permite reproducir experimentos y comparar resultados de forma consistente.
